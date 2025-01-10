@@ -5,6 +5,8 @@ const app = express();
 const ownerRoute = require('./routes/owner-router')
 const productRoute = require('./routes/product-router')
 const userRoute = require('./routes/user-router')
+const home = require('./routes/indejs')
+require('dotenv').config()
 
 const db = require('./config/mongoose-connection')
 
@@ -17,5 +19,5 @@ app.use(cookieParser())
 app.use('/owner',ownerRoute)
 app.use('/user',userRoute)
 app.use('/product',productRoute)
-
+app.use('/',home)
 app.listen(3000)                   
