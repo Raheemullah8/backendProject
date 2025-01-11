@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const userModel = require("../models/user-model");
+const userModel = require("../models/user-model")
 const { genToken } = require("../utils/genratetoken");
 
 module.exports.registerUser = async (req, res) => {
@@ -9,7 +9,8 @@ module.exports.registerUser = async (req, res) => {
 
     const userExist = await userModel.findOne({ email });
 
-    if (userExist) return res.status(401).send("you Already have an account, please login");
+    if (userExist)
+      return res.status(401).send("you Already have an account, please login");
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -24,9 +25,31 @@ module.exports.registerUser = async (req, res) => {
 
     // Send token as cookie
     res.cookie("token", token);
-    res.send("User Created Successfully");
+    res.send("User Created Successfull");
   } catch (error) {
     console.log("Error:", error.message);
     res.status(500).send("Server error");
   }
+};
+
+module.exports.loginUser = async (req, res) => {
+ try {
+  
+  let { email, password } = req.body;
+  let user = await userModel.findOne({ email: email });
+
+  if (!user) return res.status(403).send("Email password is wrong");
+
+ 
+  const result = await bcrypt.compare(password, user.password);
+  
+  if (result) {
+   const token = genToken(user);
+    res.cookie("token", token);
+    res.send("Login Successfull");
+  }
+
+ } catch (error) {
+console.log("Error:", error.message);
+ }
 };
