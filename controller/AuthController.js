@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const userModel = require("../models/user-model")
+const userModel = require("../models/user-model");
 const { genToken } = require("../utils/genratetoken");
 
 module.exports.registerUser = async (req, res) => {
@@ -9,8 +9,9 @@ module.exports.registerUser = async (req, res) => {
 
     const userExist = await userModel.findOne({ email });
 
-    if (userExist)
-      return res.status(401).send("you Already have an account, please login");
+    if (userExist) {
+      return res.status(401).send("You already have an account, please login.");
+    }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -18,14 +19,14 @@ module.exports.registerUser = async (req, res) => {
     let user = await userModel.create({
       fullname,
       email,
-      password: hashedPassword, // Use the hashed password here
+      password: hashedPassword,
     });
 
     const token = genToken(user);
 
-    // Send token as cookie
-    res.cookie("token", token);
-    res.send("User Created Successfull");
+    // Send token as a cookie
+    res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
+    res.status(201).send("User Created Successfully");
   } catch (error) {
     console.log("Error:", error.message);
     res.status(500).send("Server error");
@@ -33,23 +34,29 @@ module.exports.registerUser = async (req, res) => {
 };
 
 module.exports.loginUser = async (req, res) => {
- try {
-  
-  let { email, password } = req.body;
-  let user = await userModel.findOne({ email: email });
+  try {
+    const { email, password } = req.body;
 
-  if (!user) return res.status(403).send("Email password is wrong");
+    let user = await userModel.findOne({ email: email });
 
- 
-  const result = await bcrypt.compare(password, user.password);
-  
-  if (result) {
-   const token = genToken(user);
-    res.cookie("token", token);
-    res.send("Login Successfull");
+    if (!user) return res.status(403).send("Invalid email or password");
+
+    const result = await bcrypt.compare(password, user.password);
+
+    if (result) {
+      const token = genToken(user);
+      res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
+      res.send("Login Successful");
+    } else {
+      res.status(403).send("Invalid email or password");
+    }
+  } catch (error) {
+    console.log("Error:", error.message);
+    res.status(500).send("Server error");
   }
-
- } catch (error) {
-console.log("Error:", error.message);
- }
 };
+
+module.exports.logoutUser = (req, res) => {
+  res.cookie("token","")
+  res.redirect("/");
+}
