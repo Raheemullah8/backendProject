@@ -10,5 +10,6 @@ router.get('/shop',isLoggedin,(req,res)=>{
     res.render('shop')
 })
 
+
 module.exports = router;
 

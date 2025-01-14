@@ -6,7 +6,7 @@ const session = require("express-session");
 require("dotenv").config(); // To load environment variables
 
 // Importing routes
-const ownerRoute = require("./routes/owner-router");
+const ownerRoute = require("./routes/ownerRouter");
 const productRoute = require("./routes/product-router");
 const userRoute = require("./routes/user-router");
 const home = require("./routes/indejs");
@@ -39,7 +39,7 @@ app.use(flash()); // Flash messages middleware
 // Route setup
 app.use("/owner", ownerRoute); // Owner routes
 app.use("/user", userRoute); // User routes
-app.use("/product", productRoute); // Product routes
+app.use("/products", productRoute); // Product routes
 app.use("/", home); // Home route
 
 // Start the server on port 3000
