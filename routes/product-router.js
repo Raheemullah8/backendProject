@@ -5,11 +5,11 @@ const router = express.Router()
 router.post("/create",upload.single("image"),async(req,res)=>{
     let {name,price,description,discount,image,bgcolor,panelcolor,textcolor} = req.body
    let products = await product.create({
-      name:req.file.buffer,
+      name,
       price,
       description,
       discount,
-      image,
+      image:req.file.buffer,
       bgcolor,
       panelcolor,
       textcolor
