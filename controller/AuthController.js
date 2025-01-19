@@ -46,7 +46,7 @@ module.exports.loginUser = async (req, res) => {
     if (result) {
       const token = genToken(user);
       res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
-      res.send("Login Successful");
+      res.redirect("/shop");
     } else {
       res.status(403).send("Invalid email or password");
     }
